@@ -13,5 +13,11 @@
 
 Route::get('/', function()
 {
-	return View::make('hello');
+    return Redirect::to('book_rank');
+});
+Route::get('book_rank', function(){
+    return "All cats";
+});
+Route::get('book_rank/{id}', function($id){
+    return "rank #$id";
 });
