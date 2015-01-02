@@ -79,3 +79,24 @@ App::down(function()
 */
 
 require app_path().'/filters.php';
+
+Event::listen('cron.collectJobs', function() {
+    Cron::add('example1', '* * * * *', function() {
+        $urlTpl = "https://api.douban.com/v2/book/search?q=%s";
+        $books = Book::all();
+        foreach($books as $book) {
+            sleep(0.1);
+            $url = sprintf($urlTpl, $book->name);
+            $json = file_get_contents($url);
+            $infos = json_decode($json, true);
+            if (count($infos['books']) <= 0) {
+                continue;
+            }
+            $info = $infos['books'][0];
+            $book->mark = $info['rating']['average'];
+            $book->mark_users = $info['rating']['numRaters'];
+            $book->save();
+        }
+        return null;
+    });
+});
