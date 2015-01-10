@@ -30,7 +30,7 @@ Route::resource('ranks','RankController');
 Route::model('rank', 'Rank');
 Route::get('ranks/{rank}/rank', 'RankController@rank');
 Route::get('ranks/{rank}/delete', 'RankController@delete');
-Route::get('ajax/ranks/{id}', 'AjaxController@ranks');
+Route::controller('ajax', 'AjaxController');
 
 Route::get('ranks/create', function() {
     $rank = new Rank;
