@@ -4,8 +4,11 @@
 <h2>
     {{{$rank->name}}}
 </h2>
-<a href="{{url('ranks/'.$rank->id.'/edit')}}">
-    <span class="glyphicon glyphicon-edit"></span> 编辑
+@if (Session::has('message'))
+    <div class="alert alert-info">{{ Session::get('message') }}</div>
+@endif
+<a href="{{url('ranks/'.$rank->id.'/createBook')}}">
+    <span class="glyphicon glyphicon-plus"></span> 添加
 </a>
 <a href="{{url('ranks/'.$rank->id.'/delete')}}">
     <span class="glyphicon glyphicon-trash"></span> 删除

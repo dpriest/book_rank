@@ -26,6 +26,11 @@ class RankController extends \BaseController {
         return View::make('ranks.edit', array('title' => '新建排名', 'rank' => $rank, 'method' => 'post'));
     }
 
+    public function createBook(Rank $rank)
+    {
+        $book = new Book();
+        return View::make('ranks.editBook', array('title' => '添加书籍', 'rank' => $rank, 'book' => $book, 'method' => 'post'));
+    }
 
     /**
      * Store a newly created resource in storage.
@@ -74,6 +79,25 @@ class RankController extends \BaseController {
             return Redirect::back()->withErrors($valid)->withInput();
     }
 
+    public function storeBook($rank) {
+        $name = Input::get('name');
+        $book = array(
+            'rank_id' => $rank->id,
+            'name' => $name,
+        );
+        $rules = array(
+            'rank_id' => 'required',
+            'name' => 'required',
+        );
+        $valid = Validator::make($book, $rules);
+        if ($valid->passes()) {
+            $book = new Book($book);
+            $book->save();
+            return Redirect::to('ranks/' . $rank->id)->with('message', '已添加' . $name);
+        }
+        else
+            return Redirect::back()->withErrors($valid)->withInput();
+    }
 
     /**
      * Display the specified resource.
@@ -87,7 +111,6 @@ class RankController extends \BaseController {
         return View::make('ranks.single')
             ->with('rank', $rank);
     }
-
 
     /**
      * Show the form for editing the specified resource.

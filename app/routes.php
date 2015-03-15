@@ -26,6 +26,8 @@ Route::get('books/ranks/{name}', function($name){
         ->with('ranks', $rank)
         ->with('books', $rank->books);
 });
+Route::get('ranks/{rank}/createBook', 'RankController@createBook');
+Route::post('ranks/{rank}/storeBook', 'RankController@storeBook');
 Route::resource('ranks','RankController');
 Route::model('rank', 'Rank');
 Route::get('ranks/{rank}/rank', 'RankController@rank');
@@ -36,12 +38,6 @@ Route::get('ranks/create', function() {
     $rank = new Rank;
     return View::make('ranks.edit')
         ->with('rank', $rank)
-        ->with('method', 'post');
-});
-Route::get('books/create', function() {
-    $book = new Book;
-    return View::make('books.edit')
-        ->with('book', $book)
         ->with('method', 'post');
 });
 Route::get('books/{book}/edit', function(Book $book) {
