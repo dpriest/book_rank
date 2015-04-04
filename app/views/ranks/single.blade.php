@@ -22,6 +22,7 @@
         <th data-field="mark_users" data-sortable="true">评论人数</th>
         <th data-field="name" data-formatter="urlFormatter">豆瓣地址</th>
         <th data-field="id" data-formatter="updateDataFormatter">更新数据</th>
+        <th data-field="id" data-formatter="deleteDataFormatter">删除数据</th>
         <th data-field="updated_at" data-sortable="true">数据更新时间</th>
     </tr>
     </thead>
@@ -32,16 +33,31 @@
     }
 
     function updateDataFormatter(value) {
-        return '<a class="btn btn-small btn-info" href="javascript:void(0);" data-role="upateData" data-value="' +value+ '">更新数据</a>';
+        return '<a class="btn btn-small btn-info" href="javascript:void(0);" data-role="updateData" data-value="' +value+ '">更新数据</a>';
     }
 
-    $( document ).on( "click", '[data-role="upateData"]', function() {
+    function deleteDataFormatter(value) {
+        return '<a class="btn btn-small btn-warning" href="javascript:void(0);" data-role="deleteData" data-value="' +value+ '">删除数据</a>';
+    }
+
+    $( document ).on( "click", '[data-role="updateData"]', function() {
         var id = $(this).attr('data-value');
         $.post( "/ajax/updatebook", { id: id } ).done(function( data ) {
             if (data ==0 ) {
                 alert('调用接口过于频繁');
             } else {
                 alert('更新成功');
+            }
+        });
+    });
+
+    $( document ).on( "click", '[data-role="deleteData"]', function() {
+        var id = $(this).attr('data-value');
+        $.post( "/ajax/deletebook", { id: id } ).done(function( data ) {
+            if (data ==0 ) {
+                alert('删除失败');
+            } else {
+                alert('删除成功');
             }
         });
     });

@@ -20,4 +20,11 @@ class AjaxController extends \BaseController {
         $result = $ins->updateBook($book);
         echo $result ? 1 : 0;
     }
+
+    public function postDeletebook() {
+        $id = Input::get('id');
+        $rank = Book::find($id);
+        $result = $rank->delete();
+        echo $result;
+    }
 } 
