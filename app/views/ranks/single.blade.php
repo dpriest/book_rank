@@ -53,11 +53,13 @@
 
     $( document ).on( "click", '[data-role="deleteData"]', function() {
         var id = $(this).attr('data-value');
+        var that = this;
         $.post( "/ajax/deletebook", { id: id } ).done(function( data ) {
             if (data ==0 ) {
                 alert('删除失败');
             } else {
                 alert('删除成功');
+                that.closest('tr').remove();
             }
         });
     });
