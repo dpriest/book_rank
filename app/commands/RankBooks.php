@@ -38,7 +38,7 @@ class RankBooks extends Command {
 	public function fire()
 	{
         $date = new DateTime;
-        $date->modify('-60 minutes');
+        $date->modify('yesterday');
         $formatted_date = $date->format('Y-m-d H:i:s');
         $books = Book::where('updated_at', '<', $formatted_date)->orderBy('updated_at','asc')->take(100)->get();
         foreach($books as $book) {
