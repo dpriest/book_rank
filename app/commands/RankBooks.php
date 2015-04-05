@@ -43,7 +43,9 @@ class RankBooks extends Command {
         $books = Book::where('updated_at', '<', $formatted_date)->orderBy('updated_at','asc')->take(100)->get();
         foreach($books as $book) {
             sleep(0.3);
+            echo "update " . $book->name;
             $result = $this->updateBook($book);
+            echo "\n";
             if ($result == false) {
                 break;
             }
