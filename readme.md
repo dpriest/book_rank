@@ -1,2 +1,3 @@
 # book_rank
-douban book rank with laravel
+Book_rank is douban book rank with laravel.
+You can see it online at [http://tool.itjiqiao.com/ranks](http://tool.itjiqiao.com/ranks).
