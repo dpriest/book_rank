@@ -39,7 +39,7 @@ return array(
 	|
 	*/
 
-	'timezone' => 'UTC',
+	'timezone' => 'Asia/Shanghai',
 
 	/*
 	|--------------------------------------------------------------------------
@@ -78,7 +78,7 @@ return array(
 	|
 	*/
 
-	'key' => 'YourSecretKey!!!',
+	'key' => 'oOkKz15tkf68DQHNyFIpWxcTFIGZ90Tn',
 
 	'cipher' => MCRYPT_RIJNDAEL_128,
 
@@ -121,6 +121,8 @@ return array(
 		'Illuminate\Validation\ValidationServiceProvider',
 		'Illuminate\View\ViewServiceProvider',
 		'Illuminate\Workbench\WorkbenchServiceProvider',
+        'Liebig\Cron\CronServiceProvider',
+        'Indatus\Dispatcher\ServiceProvider',
 
 	),
 

@@ -32,20 +32,23 @@ class ProcessPipes
     private $ttyMode;
     /** @var bool    */
     private $ptyMode;
+    /** @var bool    */
+    private $disableOutput;
 
     const CHUNK_SIZE = 16384;
 
-    public function __construct($useFiles, $ttyMode, $ptyMode = false)
+    public function __construct($useFiles, $ttyMode, $ptyMode = false, $disableOutput = false)
     {
         $this->useFiles = (bool) $useFiles;
         $this->ttyMode = (bool) $ttyMode;
         $this->ptyMode = (bool) $ptyMode;
+        $this->disableOutput = (bool) $disableOutput;
 
         // Fix for PHP bug #51800: reading from STDOUT pipe hangs forever on Windows if the output is too big.
         // Workaround for this problem is to use temporary files instead of pipes on Windows platform.
         //
         // @see https://bugs.php.net/bug.php?id=51800
-        if ($this->useFiles) {
+        if ($this->useFiles && !$this->disableOutput) {
             $this->files = array(
                 Process::STDOUT => tempnam(sys_get_temp_dir(), 'sf_proc_stdout'),
                 Process::STDERR => tempnam(sys_get_temp_dir(), 'sf_proc_stderr'),
@@ -107,13 +110,11 @@ class ProcessPipes
     /**
      * Returns an array of descriptors for the use of proc_open.
      *
-     * @param bool    $disableOutput Whether to redirect STDOUT and STDERR to /dev/null or not.
-     *
      * @return array
      */
-    public function getDescriptors($disableOutput)
+    public function getDescriptors()
     {
-        if ($disableOutput) {
+        if ($this->disableOutput) {
             $nullstream = fopen(defined('PHP_WINDOWS_VERSION_BUILD') ? 'NUL' : '/dev/null', 'c');
 
             return array(
@@ -172,7 +173,7 @@ class ProcessPipes
     /**
      * Reads data in file handles and pipes.
      *
-     * @param bool    $blocking Whether to use blocking calls or not.
+     * @param bool $blocking Whether to use blocking calls or not.
      *
      * @return array An array of read data indexed by their fd.
      */
@@ -184,7 +185,7 @@ class ProcessPipes
     /**
      * Reads data in file handles and pipes, closes them if EOF is reached.
      *
-     * @param bool    $blocking Whether to use blocking calls or not.
+     * @param bool $blocking Whether to use blocking calls or not.
      *
      * @return array An array of read data indexed by their fd.
      */
@@ -261,7 +262,7 @@ class ProcessPipes
     /**
      * Reads data in file handles.
      *
-     * @param bool    $close Whether to close file handles or not.
+     * @param bool $close Whether to close file handles or not.
      *
      * @return array An array of read data indexed by their fd.
      */
@@ -297,14 +298,16 @@ class ProcessPipes
     /**
      * Reads data in file pipes streams.
      *
-     * @param bool    $blocking Whether to use blocking calls or not.
-     * @param bool    $close    Whether to close file handles or not.
+     * @param bool $blocking Whether to use blocking calls or not.
+     * @param bool $close    Whether to close file handles or not.
      *
      * @return array An array of read data indexed by their fd.
      */
     private function readStreams($blocking, $close = false)
     {
         if (empty($this->pipes)) {
+            usleep(Process::TIMEOUT_PRECISION * 1E4);
+
             return array();
         }
 
@@ -334,11 +337,11 @@ class ProcessPipes
             $type = array_search($pipe, $this->pipes);
 
             $data = '';
-            while ($dataread = fread($pipe, self::CHUNK_SIZE)) {
+            while ('' !== $dataread = (string) fread($pipe, self::CHUNK_SIZE)) {
                 $data .= $dataread;
             }
 
-            if ($data) {
+            if ('' !== $data) {
                 $read[$type] = $data;
             }
 
