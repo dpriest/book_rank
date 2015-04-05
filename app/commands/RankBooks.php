@@ -54,7 +54,7 @@ class RankBooks extends Command {
 
     public function updateBook($book) {
         $urlTpl = "https://api.douban.com/v2/book/search?q=%s";
-        $url = sprintf($urlTpl, $book->name);
+        $url = sprintf($urlTpl, urlencode($book->name));
         try {
             $json = file_get_contents($url);
         } catch(ErrorException $e) {
