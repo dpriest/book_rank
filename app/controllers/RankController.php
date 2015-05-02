@@ -92,7 +92,12 @@ class RankController extends \BaseController {
         $valid = Validator::make($book, $rules);
         if ($valid->passes()) {
             $book = new Book($book);
-            $book->save();
+            $id = $book->save();
+
+            // update mark
+            $ins = new RankBooks();
+            $ins->updateBook($book);
+
             return Redirect::to('ranks/' . $rank->id)->with('message', '已添加' . $name);
         }
         else
