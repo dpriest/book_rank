@@ -2,6 +2,8 @@
 
 class RankController extends \BaseController {
 
+    protected $_updateBookNum = 3;
+
     /**
      * Display a listing of the resource.
      *
@@ -26,10 +28,10 @@ class RankController extends \BaseController {
         return View::make('ranks.edit', array('title' => '新建排名', 'rank' => $rank, 'method' => 'post'));
     }
 
-    public function createBook(Rank $rank)
+    public function createBooks(Rank $rank) 
     {
         $book = new Book();
-        return View::make('ranks.editBook', array('title' => '添加书籍', 'rank' => $rank, 'book' => $book, 'method' => 'post'));
+        return View::make('ranks.edit', array('title' => '添加多本书籍', 'rank' => $rank, 'book' => $book, 'method' => 'put'));
     }
 
     /**
@@ -50,6 +52,8 @@ class RankController extends \BaseController {
             'contents' => 'required',
         );
         $valid = Validator::make($input, $rules);
+        $updateCount = $this->_updateBookNum;
+        $ins = new RankBooks();
         if ($valid->passes()) {
             $list = preg_split('/\r\n|\r|\n/', $contents);
             $rank = array('name' => $name);
@@ -72,6 +76,9 @@ class RankController extends \BaseController {
                 $book = array('name' => $record, 'mark' => 0, 'mark_users' => 0, 'rank_id' => $rank->id);
                 $book = new Book($book);
                 $book->save();
+                if ($updateCount-- > 0) {
+                    $result = $ins->updateBook($book);
+                }
             }
             return Redirect::to('ranks')->with('success', 'Rank is saved!');
         }
@@ -152,8 +159,9 @@ class RankController extends \BaseController {
     public function update($id)
     {
         $rank = Rank::find($id);
+        $books = array();
         foreach($rank->books as $book) {
-            $book->delete();
+            $books[] = $book->name;
         }
         $contents = Input::get('content');
         $name = Input::get('name');
@@ -166,6 +174,8 @@ class RankController extends \BaseController {
             'contents' => 'required',
         );
         $valid = Validator::make($input, $rules);
+        $updateCount = $this->_updateBookNum;
+        $ins = new RankBooks();
         if ($valid->passes()) {
             $list = preg_split('/\r\n|\r|\n/', $contents);
             $rank->name = $name;
@@ -184,8 +194,14 @@ class RankController extends \BaseController {
                     $validNames[] = $item;
                 }
                 $record = implode('', $validNames);
+                if (in_array($record, $books)) {
+                    continue;
+                }
                 $book = array('name' => $record, 'mark' => 0, 'mark_users' => 0, 'rank_id' => $rank->id);
                 $book = new Book($book);
+                if ($updateCount-- > 0) {
+                    $result = $ins->updateBook($book);
+                }
                 $book->save();
             }
             return Redirect::to('ranks')->with('success', 'Rank is saved!');

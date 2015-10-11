@@ -27,6 +27,7 @@ Route::get('books/ranks/{name}', function($name){
         ->with('books', $rank->books);
 });
 Route::get('ranks/{rank}/createBook', 'RankController@createBook');
+Route::get('ranks/{rank}/createBooks', 'RankController@createBooks');
 Route::post('ranks/{rank}/storeBook', 'RankController@storeBook');
 Route::resource('ranks','RankController');
 Route::model('rank', 'Rank');

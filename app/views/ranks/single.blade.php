@@ -7,7 +7,7 @@
 @if (Session::has('message'))
     <div class="alert alert-info">{{ Session::get('message') }}</div>
 @endif
-<a href="{{url('ranks/'.$rank->id.'/createBook')}}">
+<a href="{{url('ranks/'.$rank->id.'/createBooks')}}">
     <span class="glyphicon glyphicon-plus"></span> 添加
 </a>
 <a href="{{url('ranks/'.$rank->id.'/delete')}}">
