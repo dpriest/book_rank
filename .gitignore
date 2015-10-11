@@ -5,3 +5,5 @@ composer.lock
 .env.php
 .DS_Store
 Thumbs.db
+.*
+scripts/crawl_books.py
