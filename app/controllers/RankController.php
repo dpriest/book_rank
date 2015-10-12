@@ -185,15 +185,6 @@ class RankController extends \BaseController {
                 if ($record == '') {
                     continue;
                 }
-                $list = preg_split('/\s+/', $record);
-                $validNames = array();
-                foreach($list as $item) {
-                    if (is_numeric($item)) {
-                        break;
-                    }
-                    $validNames[] = $item;
-                }
-                $record = implode('', $validNames);
                 if (in_array($record, $books)) {
                     continue;
                 }
