@@ -42,7 +42,7 @@ class RankBooks extends Command {
         $formatted_date = $date->format('Y-m-d H:i:s');
         $books = Book::where('updated_at', '<', $formatted_date)->orderBy('updated_at','asc')->take(50)->get();
         foreach($books as $book) {
-            sleep(0.6);
+            sleep(1);
             echo "update " . $book->name;
             $result = $this->updateBook($book);
             echo "\n";
