@@ -73,6 +73,10 @@ class RankController extends \BaseController {
                     $validNames[] = $item;
                 }
                 $record = implode(' ', $validNames);
+                $book = DB::select('select id from books where name ="?"', [$record]);
+                if ($book) {
+                    continue;
+                }
                 $book = array('name' => $record, 'mark' => 0, 'mark_users' => 0, 'rank_id' => $rank->id);
                 $book = new Book($book);
                 $book->save();
