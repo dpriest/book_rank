@@ -73,15 +73,9 @@ class RankController extends \BaseController {
                     $validNames[] = $item;
                 }
                 $record = implode(' ', $validNames);
-                $book = DB::select('select id from books where name ="?"', [$record]);
-                if ($book) {
-                    continue;
-                }
-                $book = array('name' => $record, 'mark' => 0, 'mark_users' => 0, 'rank_id' => $rank->id);
-                $book = new Book($book);
-                $book->save();
+                $book = $this->saveBook($rank->id, $record);
                 if ($updateCount-- > 0) {
-                    $result = $ins->updateBook($book);
+                    $ins->updateBook($book);
                 }
             }
             return Redirect::to('ranks')->with('success', 'Rank is saved!');
@@ -181,9 +175,9 @@ class RankController extends \BaseController {
         $updateCount = $this->_updateBookNum;
         $ins = new RankBooks();
         if ($valid->passes()) {
-            $list = preg_split('/\r\n|\r|\n/', $contents);
             $rank->name = $name;
             $rank->save();
+            $list = preg_split('/\r\n|\r|\n/', $contents);
             foreach ($list as $record) {
                 $record = trim($record);
                 if ($record == '') {
@@ -192,12 +186,10 @@ class RankController extends \BaseController {
                 if (in_array($record, $books)) {
                     continue;
                 }
-                $book = array('name' => $record, 'mark' => 0, 'mark_users' => 0, 'rank_id' => $rank->id);
-                $book = new Book($book);
+                $book = $this->saveBook($rank->id, $record);
                 if ($updateCount-- > 0) {
-                    $result = $ins->updateBook($book);
+                    $ins->updateBook($book);
                 }
-                $book->save();
             }
             return Redirect::to('ranks')->with('success', 'Rank is saved!');
         }
@@ -216,6 +208,15 @@ class RankController extends \BaseController {
         $rank = Rank::find($id);
         $rank->delete();
         return Redirect::to('ranks')->with('success', 'Rank is deleted!');
+    }
+
+    private function saveBook($rankId, $name)
+    {
+        $book = array('name' => $name, 'mark' => 0, 'mark_users' => 0, 'rank_id' => $rankId);
+        $book = new Book($book);
+        $book->updated_at = date('Y-m-d G:i:s', strtotime('-1 week'));
+        $book->save();
+        return $book;
     }
 }
 ?>
